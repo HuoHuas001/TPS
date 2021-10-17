@@ -2,13 +2,13 @@
 #include <mc/Player.h>
 #include <time.h>
 #include <sys/timeb.h>
-#include "mod.h"
 #include <mc/Command.h>
 #include <mc/CommandReg.h>
 #include <api/regCommandHelper.h>
 #include <sstream>
 #include <iomanip>
-
+#include <iostream>
+using namespace std;
 //全局变量
 int tick = 0;
 const float reset_ticks = 20.0;
@@ -52,7 +52,7 @@ void entry() {
     long long timeTemp = getTimeStamp();
     time_old = timeTemp;
     time_new = timeTemp;
-    printf("[INFO] TPS Loaded.");
+    printf("[INFO]TPS Loaded. By HuoHuaX");
 
     //注册指令
     Event::addEventListener([](RegCmdEV ev) {
@@ -71,6 +71,7 @@ THook(void, "?tick@ServerLevel@@UEAAXXZ",
         time_old = time_new;
         time_new = getTimeStamp();
     }
+    return original(_this);
 }
 
 //控制台输入
@@ -78,7 +79,7 @@ THook(bool, "??$inner_enqueue@$0A@AEBV?$basic_string@DU?$char_traits@D@std@@V?$a
     void* _this, std::string* cmd) {
     if(*cmd == "tps") {
         std::string tpsString = Convert(getTps());
-        cout << "TPS:" << tpsString << '\n';
+        cout << "[INFO]TPS:" << tpsString << '\n';
         return false;
     }
     return original(_this, cmd);
