@@ -52,7 +52,7 @@ void entry() {
     long long timeTemp = getTimeStamp();
     time_old = timeTemp;
     time_new = timeTemp;
-    printf("[INFO]TPS Loaded. By HuoHuaX");
+    printf("[INFO] TPS Loaded. By HuoHuaX\n");
 
     //×¢²áÖ¸Áî
     Event::addEventListener([](RegCmdEV ev) {
@@ -79,7 +79,7 @@ THook(bool, "??$inner_enqueue@$0A@AEBV?$basic_string@DU?$char_traits@D@std@@V?$a
     void* _this, std::string* cmd) {
     if(*cmd == "tps") {
         std::string tpsString = Convert(getTps());
-        cout << "[INFO]TPS:" << tpsString << '\n';
+        cout << "[INFO] TPS:" << tpsString << '\n';
         return false;
     }
     return original(_this, cmd);
