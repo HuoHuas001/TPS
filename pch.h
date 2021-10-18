@@ -12,3 +12,4 @@
 #endif //PCH_H
 #include <api/basicEvent.h>
 #include <mc/Player.h>
+#define ERROR(err){cout << "[Error][TPS] " << err << "\n";}

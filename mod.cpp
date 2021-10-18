@@ -27,7 +27,7 @@ float getTps() {
     float w = 1000.0;
     float tpsns = w * (reset_ticks / (time_new - time_old));
     stringstream sStream;
-    sStream << fixed << setprecision(1) << tpsns;
+    sStream << fixed << setprecision(2) << tpsns;
     sStream >> tpsns;
     return tpsns;
 }
@@ -65,12 +65,18 @@ void entry() {
 //tick
 THook(void, "?tick@ServerLevel@@UEAAXXZ",
     void* _this) {
-    ++tick;
-    if (tick == reset_ticks) {
-        tick = 0;
-        time_old = time_new;
-        time_new = getTimeStamp();
+    try {
+        ++tick;
+        if (tick == reset_ticks) {
+            tick = 0;
+            time_old = time_new;
+            time_new = getTimeStamp();
+        }
     }
+    catch (const char*& e) {
+        ERROR(e);
+    }
+    
     return original(_this);
 }
 
