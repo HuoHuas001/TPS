@@ -29,6 +29,23 @@ float getTps() {
     stringstream sStream;
     sStream << fixed << setprecision(2) << tpsns;
     sStream >> tpsns;
+    if (tpsns > 20) {
+        tpsns = 20.0;
+    }
+    return tpsns;
+}
+
+float getSelfTps(int Num) {
+    float w = 1000.0;
+    float tpsns = w * (reset_ticks / (time_new - time_old));
+    stringstream sStream;
+    if (Num >= 0) {
+        sStream << fixed << setprecision(Num) << tpsns;
+        sStream >> tpsns;
+    }
+    if (tpsns > 20) {
+        tpsns = 20.0;
+    }
     return tpsns;
 }
 
@@ -40,14 +57,19 @@ std::string Convert(float Num)
     return str;
 }
 
-bool oncmd_tps(CommandOrigin const& ori, CommandOutput& outp) {
-    std::string tpsString = Convert(getTps());
-    outp.addMessage("TPS:" + tpsString);
+bool oncmd_tps(CommandOrigin const& ori, CommandOutput& outp, optional<int>& str2) {
+    if (str2.set) {
+        std::string tpsString = Convert(getSelfTps(str2.val()));
+        outp.addMessage("[INFO] TPS:" + tpsString);
+    }
+    else {
+        std::string tpsString = Convert(getTps());
+        outp.addMessage("[INFO] TPS:" + tpsString);
+    }
     return true;
 }
 
 void entry() {
-    //std::cout << "Hello World\n";
     //赋值变量
     long long timeTemp = getTimeStamp();
     time_old = timeTemp;
@@ -58,7 +80,7 @@ void entry() {
     Event::addEventListener([](RegCmdEV ev) {
         CMDREG::SetCommandRegistry(ev.CMDRg);
         MakeCommand("tps", "show tps", 0);//注册指令
-        CmdOverload(tps, oncmd_tps);//重载指令
+        CmdOverload(tps, oncmd_tps,"point");//重载指令
         });
 }
 
@@ -71,6 +93,7 @@ THook(void, "?tick@ServerLevel@@UEAAXXZ",
             tick = 0;
             time_old = time_new;
             time_new = getTimeStamp();
+            //cout << time_old << " " << time_new << " " << time_new-time_old <<"\n";
         }
     }
     catch (const char*& e) {
@@ -78,16 +101,5 @@ THook(void, "?tick@ServerLevel@@UEAAXXZ",
     }
     
     return original(_this);
-}
-
-//控制台输入
-THook(bool, "??$inner_enqueue@$0A@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@?$SPSCQueue@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@$0CAA@@@AEAA_NAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
-    void* _this, std::string* cmd) {
-    if(*cmd == "tps") {
-        std::string tpsString = Convert(getTps());
-        cout << "[INFO] TPS:" << tpsString << '\n';
-        return false;
-    }
-    return original(_this, cmd);
 }
 
